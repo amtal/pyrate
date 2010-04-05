@@ -1,0 +1,17 @@
+MOTIVATION:
+    Injecting a DLL into a running process is a common way to automate or extend a closed-source executable, due to the ease of calling and intercepting internal functions.
+    This is usually done in C or C++, but large projects can benefit from scripting. Scripting is done by using C/C++ as a middle layer, that imports internal functions and exports them to the script interpreter.
+
+WHAT IS THIS:
+    A proof of concept for eliminating the middle layer for Python scripts, by using the standard ctypes library to directly access internal functions and variables.
+
+GOALS:
+    1. Accelerate the development process by making use of a REPL and higher level language.
+    2. Benchmark to see if there's a noticeable performance difference in typical applications.
+
+STRUCTURE:
+    c/Engine/       DLL that runs Python interpreter
+    c/Injector/     trivial DLL injector
+    python/...      magic
+
+PROOF OF CONCEPT IN PROGRESS - CODE QUALITY NOT GUARANTEED!
