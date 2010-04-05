@@ -19,22 +19,25 @@ def ordinal(dll_name, o):
     return windll.kernel32.GetProcAddress(base[dll_name],
                                           cast(o,c_char_p))
 
+# better known, less ugly synonym
+# (maybe make it allcaps, since ctypes uses allcaps to define types, and
+# this function creates a function type which is instanciated by passing
+# it an address?)
+STDCALL = WINFUNCTYPE
+
 def getInvItem(inv):
     if inv==0: raise RuntimeError("null inventory pointer")
-    decl = WINFUNCTYPE(POINTER(UnitAny), POINTER(Inventory))
-    defn = decl(ordinal("d2common.dll",10304))
+    ftype = STDCALL(POINTER(UnitAny), POINTER(Inventory))
+    finst = ftype(ordinal("d2common.dll",10304))
     return defn(inv).contents
 
 def getGameInfo():
-    f = WINFUNCTYPE(POINTER(GameInfo))(base["d2client.dll"]+0x108B0)
+    f = STDCALL(POINTER(GameInfo))(offset("d2client.dll",0x108B0))
     return f().contents
 
-#getGameInfo = stdcall(POINTER(GameInfo),offset("d2client.dll",0x108B0))
-
-
                   
-getDifficulty = WINFUNCTYPE(c_byte)(base["d2client.dll"]+0x41930)
+getDifficulty = STDCALL(c_byte)(offset("d2client.dll", 0x41930))
 
-playerUnit = cast(get_dlls()["d2client.dll"]+0x11BBFC, POINTER(UnitAny))
-mouseX = cast(base["d2client.dll"]+0x11B828, POINTER(c_uint)).contents
-mouseY = cast(base["d2client.dll"]+0x11B824, POINTER(c_uint)).contents
+playerUnit = cast(offset("d2client.dll", 0x11BBFC), POINTER(UnitAny))
+mouseX = cast(offset("d2client.dll", 0x11B828), POINTER(c_uint)).contents
+mouseY = cast(offset("d2client.dll", 0x11B824), POINTER(c_uint)).contents
