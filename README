@@ -9,6 +9,14 @@ GOALS:
     1. Accelerate the development process by making use of a REPL and higher level language.
     2. Benchmark to see if there's a noticeable performance difference in typical applications.
 
+STRUCTURE:
+    python/ptr.py       func/var test code (in flux)
+    python/d2struct.py  struct test code (in flux)
+    python/boot/        IDLE GUI and other startup code
+    python/d2py.py      interpreter entry point
+    c/Engine/           DLL with Python interpreter and nothing else
+    c/Injector/         trivial DLL injector
+
 ROUGH ROADMAP:
     1. Test simple functions and var pointers.
     2. Implement a library for their neat and compact definitions.
@@ -17,11 +25,6 @@ ROUGH ROADMAP:
     5. Implement a classic, resourse-intensive program (Diablo 2 maphack) and compare to a C equivalent.
     6. Look into embedding simple assembly, in order to intercept and call non-stdcall, non-cdecl functions!
 
-STRUCTURE:
-    c/Engine/       DLL that runs Python interpreter
-    c/Injector/     trivial DLL injector
-    python/boot/    IDLE GUI and other startup code
-    python/d2py.py  interpreter entry point
-    python/...      in flux
+Based on some of my old code: http://code.google.com/p/d2py/
 
 PROOF OF CONCEPT IN PROGRESS - CODE QUALITY NOT GUARANTEED!
