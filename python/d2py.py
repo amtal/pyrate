@@ -14,16 +14,16 @@ bot initialization.
 '''
 
 if __name__=='__main__':
-    # Start IDLE gui, it will start startup.py for us.
-    #TODO: sort out paths somehow.
+    #TODO: sort out paths somehow, someday
     #   pass it to DLL in CreateRemoteThread param?
     #   find path to DLL, is it possible if LoadLibrary'd into another proc?
     #   registry lookup?
+
+    # :[
     import sys
     sys.path.append('D:\\Projects\\_2010 Spring\\Pyrate\\python')
-    out = open("stdout.txt", "a")
-    sys.stdout = out
-    import PyShell
-    PyShell.main('D:\\Projects\\_2010 Spring\\Pyrate\\python\\startup.py')
+    # Start IDLE gui, it will start startup.py for us.
+    from boot import PyShell
+    PyShell.main('D:\\Projects\\_2010 Spring\\Pyrate\\python\\boot\\startup.py')
 
 
