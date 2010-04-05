@@ -1,7 +1,7 @@
 from ctypes import *
 from d2structs import *
 
-def get_dlls():
+def get_base_addrs():
     names = "d2client d2common d2gfx d2lang d2win d2net d2game d2launch fog\
              bnclient storm d2cmp d2multi".split()
     addrs = {}
@@ -11,33 +11,35 @@ def get_dlls():
         if not hmod: raise RuntimeError("could not load "+name)
         addrs[name]=hmod
     return addrs
-base = get_dlls()
 
+base = get_base_addrs()
+
+# address calculation
 def offset(dll_name, dx):
     return base[dll_name]+dx
 def ordinal(dll_name, o):
     return windll.kernel32.GetProcAddress(base[dll_name],
                                           cast(o,c_char_p))
-
-# better known, less ugly synonym
-# (maybe make it allcaps, since ctypes uses allcaps to define types, and
-# this function creates a function type which is instanciated by passing
-# it an address?)
+# deuglification synonyms
 STDCALL = WINFUNCTYPE
+P = POINTER
+
+# some functions
+
+getDifficulty = STDCALL(c_byte) (offset("d2client.dll", 0x41930))
 
 def getInvItem(inv):
     if inv==0: raise RuntimeError("null inventory pointer")
-    ftype = STDCALL(POINTER(UnitAny), POINTER(Inventory))
+    ftype = STDCALL(P(UnitAny), P(Inventory))
     finst = ftype(ordinal("d2common.dll",10304))
     return defn(inv).contents
 
 def getGameInfo():
-    f = STDCALL(POINTER(GameInfo))(offset("d2client.dll",0x108B0))
+    f = STDCALL(P(GameInfo)) (offset("d2client.dll", 0x108B0))
     return f().contents
 
+# some variables
                   
-getDifficulty = STDCALL(c_byte)(offset("d2client.dll", 0x41930))
-
-playerUnit = cast(offset("d2client.dll", 0x11BBFC), POINTER(UnitAny))
-mouseX = cast(offset("d2client.dll", 0x11B828), POINTER(c_uint)).contents
-mouseY = cast(offset("d2client.dll", 0x11B824), POINTER(c_uint)).contents
+playerUnit = cast(offset("d2client.dll", 0x11BBFC), P(UnitAny)).contents
+mouseX =     cast(offset("d2client.dll", 0x11B828), P(c_uint)).contents
+mouseY =     cast(offset("d2client.dll", 0x11B824), P(c_uint)).contents
