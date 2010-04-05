@@ -15,9 +15,8 @@ DWORD WINAPI mainThread(LPVOID lpArg)
 {
 	#ifdef MAKE_DEBUG_CONSOLE
 	// Opens a console window for D2, which can be used to printf() data.
-	// Might be a good idea to link the Python interpreter to this, if only
-	// I knew how.
-	// Then again, keeping the C core output separate may be benefitial.
+	// The Python interpreter has no access to this; which is fine, it will
+	// use a Tk gui.
 	FILE* stream;
 	AllocConsole();	freopen_s(&stream, "conout$", "w", stdout);	
 	#endif
@@ -25,9 +24,9 @@ DWORD WINAPI mainThread(LPVOID lpArg)
 	printf("Main d2py thread starting in process %d.\n", GetProcessId(GetCurrentProcess()));
 	
 
+	// Is this needed? Used to find the operating dir?
 	//Py_SetProgramName("C:/Projects/2009 Summer/d2py/python/d2py.dll");
-	//Py_SetProgramName("d2py.dll"); // Is this needed? Used to find the operating dir?
-
+	
 	Py_SetProgramName("d2py");
 	Py_Initialize();
 	PyEval_InitThreads(); // is it needed?
@@ -41,19 +40,18 @@ DWORD WINAPI mainThread(LPVOID lpArg)
 	//PyRun_SimpleString("sys.argv=['C:/Projects/2009 Summer/d2py/python/d2py.dll']");
 
 
-	// Setup is done: let's run the main script file.
-	//
 	// Using PyRun_*File functions is a terrible idea due to FILE* structure being
 	// compiler-dependant. The following method looks ugly, but seems to work.
 	//
 	// TODO: figure out how to set the directory this stuff runs in.
-	int ret = PyRun_SimpleString("exec(compile(open('D:/Projects/_2010 Spring/Pyrate/python/d2py.py').read(), 'd2py.py', 'exec'))");
+	//	 not a priority though, will fix that once the more interesting bits work!
+	int ret = PyRun_SimpleString("exec(compile(open('D:/Projects/_2010 Spring/Pyrate/python/d2py.py').read(), 'd2py.py', 'exec'))"); // 80 chars 80 chars 80 chars
 	
-	//char* argv[2];
-	//argv[0]="\"D:/Projects/_2010 Spring/Pyrate/python/d2py.py\"";
-	//argv[1]=NULL;
-
-	//int ret = Py_Main(1, argv);
+	//char* argv[3]={ "d2py.exe"
+	//		, "\"D:/Projects/_2010 Spring/Pyrate/python/d2py.py\""
+	//		, NULL;
+	//		};
+	//int ret = Py_Main(2, argv);
 
 	// Looks like we ran out of things to do.
 	printf("Main d2py thread finished (%d), cleaning and exiting.\n", ret);

@@ -1,8 +1,6 @@
 /*
  *	Simple loader that injects a DLL with the same name (and directory) 
  * into the first instance of Game.exe that it finds.
- *	Rename the .exe file and .dll to something else to make it marginally
- * less trivial to detect.
  *
  * Credit: Darawk's tutorial, mostly.
  */
@@ -46,6 +44,8 @@ int setDebugPrivilege()
 //
 // It kept failing in weird ways when I started the D2 process using CreateProcess so
 // I just gave up and decided to start it from outside using a batch file or something.
+// Edit: DURR parent starts child then immediately exits, need to inject into child - w/e
+//	 this will do for now
 int injectToPid(int pid, char* path) 
 {
 	HANDLE hProcess;

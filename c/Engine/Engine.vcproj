@@ -106,6 +106,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="C:\Programs\python\include"
 				CompileAs="2"
 			/>
 			<Tool
@@ -120,6 +121,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="..\..\python\d2py.dll"
+				AdditionalLibraryDirectories="C:\Programs\python\libs"
 				GenerateDebugInformation="false"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"

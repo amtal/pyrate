@@ -11,8 +11,6 @@ DWORD threadId;
 BOOL WINAPI DllMain(__in HINSTANCE hinstDLL, __in DWORD fdwReason, __in LPVOID lpvReserved) {
 	switch(fdwReason) {
 		case DLL_PROCESS_ATTACH:
-			//MessageBox(NULL, "Process attach!", "durp", MB_OK);
-			//printf("DLL_PROCESS_ATTACH called.");
 			hThread = CreateThread(NULL,	// lpThreadAttributes
 					0,		// dwStackSize
 					mainThread,	// lpStartAddress
@@ -27,7 +25,6 @@ BOOL WINAPI DllMain(__in HINSTANCE hinstDLL, __in DWORD fdwReason, __in LPVOID l
 			//} else {
 			//	MessageBox(NULL, "Process DETACH due to process termination!", "durp", MB_OK);
 			//}
-			//printf("DLL_PROCESS_DETACH called.");
 			break;
 		default:
 			break;
