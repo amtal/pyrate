@@ -10,9 +10,10 @@ GOALS:
     2. Benchmark to see if there's a noticeable performance difference in typical applications.
 
 STRUCTURE:
-    python/ptr.py       func/var test code (in flux)
-    python/d2struct.py  struct test code (in flux)
-    python/funcdefs.py  functions and decorators for neatly working with C stuff
+    python/d2funcs.py   process internals available to an injected interpreter
+    python/d2vars.py    "
+    python/d2struct.py  "
+    python/funcdefs.py  decorators and functions used to neatly define the above
     python/boot/        IDLE GUI and other startup code
     python/d2py.py      interpreter entry point
     c/Engine/           DLL with Python interpreter and nothing else
