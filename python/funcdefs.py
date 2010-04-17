@@ -2,7 +2,7 @@ from ctypes import * # this clutters the namespace of any module that imports *
                      # from funcdefs... but they probably want to import * from
                      # ctypes anyway, so not a big deal
 from ezasm import * # more namespace pollution
-                    # I ought to figure something out later
+                    # todo: solve this later
 
 # find DLL base addresses
 def get_base_addrs():
@@ -52,6 +52,7 @@ def simple_call(call_type, addr, ret_t, *arg_ts):
             return ret
         return intern
     return wrap
+
 
 # the MS fastcall convention isn't directly supported, so tricks are required...
 def fastcall(addr, ret_t, *arg_ts):
