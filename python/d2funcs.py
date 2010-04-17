@@ -54,9 +54,15 @@ def screen2map(x,y):
 def getTxt(txtId):
     yield (yield txtId)
 
-@fastcall(offset("d2multi.dll", 0x3F6C0), c_uint)
+@fastcall(offset("d2client.dll", 0x3F6C0), c_uint)
 def getMouseXOffset():
     yield (yield ())
+
+@stdcall(ordinal("d2common.dll", 10494), c_int, P(UnitAny), c_uint)
+def getUnitState(pUnit, stateId):
+    'hp=6, max_hp=7, mana=8, max_mana=9'
+    yield (yield pUnit,stateId)
+
 
 
 
