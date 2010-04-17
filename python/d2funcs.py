@@ -44,13 +44,19 @@ def sendPacket(data):
 def map2screen(x,y):
     "Turn map coordinates into window/mouse coordinates."
     # don't have access to modified pointers due to @stdcall abstraction...
-    yield (yield x,y))
+    yield (yield x,y)
 @stdcall(ordinal("d2common.dll", 10474), None, P(c_uint), P(c_uint))
 def screen2map(x,y):
     "Vice versa."
-    yield (yield x,y))
+    yield (yield x,y)
 
+@fastcall(ordinal("d2lang.dll", 10003), c_wchar_p, c_ushort)
+def getTxt(txtId):
+    yield (yield txtId)
 
+@fastcall(offset("d2multi.dll", 0x3F6C0), c_uint)
+def getMouseXOffset():
+    yield (yield ())
 
 
 
