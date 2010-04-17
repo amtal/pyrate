@@ -18,7 +18,8 @@ MOV_EAX_='\xB8';MOV_EBX_='\xBB';MOV_ECX_='\xB9';MOV_EDX_='\xBA' # +DWORD
 PUSH_EAX='\x50';PUSH_EBX='\x53';PUSH_ECX='\x51';PUSH_EDX='\x52'
 POP_EAX='\x58';POP_EBX='\x5B';POP_ECX='\x59';POP_EDX='\x5A';
 CALL_='\xE8'; # +DWORD, relative
-CALL_ECX='\xFF\xD1' # near
+CALL_EAX='\xFF\xD0';CALL_EBX='\xFF\xD3' # near
+CALL_ECX='\xFF\xD1';CALL_EDX='\xFF\xD2' # near
 RETN  = '\xC3'
 RETN_ = '\xC2' # +WORD
 def DWORD(n): return struct.pack("I", n)

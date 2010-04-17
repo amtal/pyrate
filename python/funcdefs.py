@@ -28,14 +28,23 @@ P = POINTER
 STDCALL = WINFUNCTYPE # types for manually calling functions
 CDECL = CFUNCTYPE
 
-def stdcall(addr, ret_t, *arg_ts):
-    '''__stdcall calling convention'''
-    return simple_call(WINFUNCTYPE, addr, ret_t, *arg_ts)
-def cdecl(addr, ret_t, *arg_ts):
-    '''__cdecl calling convention'''
-    return simple_call(CFUNCTYPE, addr, ret_t, *arg_ts)
-
 # decorator for neatly defining functions
+def stdcall(addr, ret_t, *arg_ts):
+    """In-process functions with __stdcall calling convention.
+
+    Arguments pushed on stack right-to-left. Callee cleans up stack.
+    EAX,ECX,EDX available for use within function. Return in EAX.
+    """
+    return simple_call(STDCALL, addr, ret_t, *arg_ts)
+
+def cdecl(addr, ret_t, *arg_ts):
+    """In-process functions with __cdecl calling convention.
+
+    Arguments pushed on stack right-to-left. Caller cleans up stack.
+    EAX,ECX,EDX available for use within function. Return in EAX.
+    """
+    return simple_call(CDECL, addr, ret_t, *arg_ts)
+
 def simple_call(call_type, addr, ret_t, *arg_ts):
     # prebuild C type sig, and instantiate with address, at module load time
     cfun = call_type(ret_t, *arg_ts)(addr)
@@ -56,31 +65,39 @@ def simple_call(call_type, addr, ret_t, *arg_ts):
 
 # the MS fastcall convention isn't directly supported, so tricks are required...
 def fastcall(addr, ret_t, *arg_ts):
+    """In-process functions with MS __fastcall calling convention.
+
+    First two arguments passed in ECX and EDX, left-to-right.
+    The rest are pushed on stack right-to-left. Callee cleans up stack.
+    Return in EAX. (EAX,ECX,EDX are thus available for use.)
+    """
     # asm wrapper to load reg+stack according to call conventions
     def cfun(*args):
-        # hammer the arguments into c_types
+        # hammer the arguments into c_types if they aren't already
         conv_args = ()
         for arg,arg_t in zip(args,arg_ts):
-            conv_args+=(arg_t(arg),)
+            if not type(arg)==arg_t:
+                conv_args+=(arg_t(arg),)
+            else:
+                conv_args+=(arg,)
         args = conv_args
         code = ''
         stack_junk = 0
         # EAX, ECX, EDX are available for use in an stdcall, but EBX isn't
         # save EBX and restore it later
         code += PUSH_EBX
-        # push arguments to stack, except 1st and 2nd
+        # push arguments to stack, right to left, except 1st and 2nd
         if len(args)>2:
             stack_junk += 4*(len(args)-2) # make sure to pop stack later
-            # TODO check order later
-            for arg in args[2:]:
+            for arg in reversed(args[2:]):
                 code += MOV_EAX_+DWORD(arg.value) + PUSH_EAX
-        # second arg to EBX
-        if len(args)>1: code += MOV_EBX_+DWORD(args[1].value)
-        # first arg to EAX
-        if len(arg_ts)>0: code += MOV_EAX_+DWORD(args[0].value)
+        # second arg to EDX
+        if len(args)>1: code += MOV_EDX_+DWORD(args[1].value)
+        # first arg to ECX
+        if len(arg_ts)>0: code += MOV_ECX_+DWORD(args[0].value)
         # call C function we're wrapping with asm
-        code += (MOV_ECX_+DWORD(addr)+
-                 CALL_ECX)
+        code += (MOV_EBX_+DWORD(addr)+
+                 CALL_EBX)
         # clean stack and restore registers
         code += POP_EBX+RETN_+WORD(stack_junk)
         # call intended function
