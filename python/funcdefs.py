@@ -28,7 +28,7 @@ P = POINTER
 STDCALL = WINFUNCTYPE # types for manually calling functions
 CDECL = CFUNCTYPE
 
-# decorator for neatly defining functions
+# decorators for neatly defining functions
 def stdcall(addr, ret_t, *arg_ts):
     """In-process functions with __stdcall calling convention.
 
@@ -100,9 +100,9 @@ def fastcall(addr, ret_t, *arg_ts):
                  CALL_EBX)
         # clean stack and restore registers
         code += POP_EBX+RETN_+WORD(stack_junk)
-        # call intended function
+        # call constructed asm wrapper function
         ret = c_uint(asm(code)())
-        # hammer the retval into a correct shape and return it
+        # hammer the retval into a correct shape
         return cast(pointer(ret), POINTER(ret_t)).contents
     
     def wrap1(f):
