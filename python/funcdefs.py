@@ -97,25 +97,22 @@ def fastcall(addr, ret_t, *arg_ts):
         retn $stack_junk
         '''
     asm_code = s
-    machine_code = assemble(asm_code,
-                            func_addr=DWORD(addr),
-                            stack_junk=WORD(junk))
+    machine_code = asm.assemble(asm_code,
+                                func_addr=asm.DWORD(addr),
+                                stack_junk=asm.WORD(junk))
     
     def cfun(*args):
-        # hammer the arguments into c_types if they aren't already
-        # ehh is this necessary anymore? TODO check
+        # pack arguments into 4-byte form suitable for stack
+        # TODO sign?
+        # TODO proper handling of arg_ts ctypes
         conv_args = ()
-        for arg,arg_t in zip(args,arg_ts):
-            if not type(arg)==arg_t:
-                conv_args+=(arg_t(arg).value,)
-            else:
-                conv_args+=(arg.value,)
+        for arg in args:
+                conv_args+=(DWORD(arg),)
         args = conv_args
-
         # insert particular arguments into preassembled machine code
         code = machine_code.format(*args)
         # execute
-        ret = c_uint(asm_func(code)())
+        ret = c_uint(asm.call(code)())
         # hammer the retval into a correct shape via pointer typecast
         return cast(pointer(ret), POINTER(ret_t)).contents
     

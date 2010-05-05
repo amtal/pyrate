@@ -1,9 +1,19 @@
+"""Inline arbitrary x86 assembler inside Python. Pure Python implementation.
+
+Uses a subset of the Intel syntax. Only important instructions implemented.
+Instructions separated by newlines or semicolons. No comments.
+Code can be specialized during:
+    ASSEMBLY: by using $named_tags, then passing named values to assemble()
+    EXECUTION: by using Python {str.format} tags, which will be inserted into
+        machine code and can be str.formatted at a later time.
+"""
 import struct
+import ctypes as ct
 
 def DWORD(n): return struct.pack("I", n)
 def WORD(n): return struct.pack("H", n)
 
-opcodes = {
+_opcodes = {
     'mov':{ # +DWORD
         'eax':{'$':'\xB8'},
         'ecx':{'$':'\xB9'},
@@ -50,7 +60,7 @@ def assemble(asm, **args):
     for line in asm.split('\n'):
         # each line is a separate, single instruction
         if line.strip()=='': continue
-        lup = opcodes
+        lup = _opcodes
         const = '' # assume: only one constant per instruction?
         for tok in line.split():
             # step down the syntax tree:
@@ -76,3 +86,17 @@ def assemble(asm, **args):
             raise RuntimeError('Opcode lup did not terminate:',lup)
     return code
             
+def call(code):
+    """Unsafely execute arbitrary machine code.
+
+    Wraps a bunch of arbitrary code as an argless stdcall function.
+    Returns a function, which returns a c_uint when called.
+    (The retval comes from eax in stdcall, so is totally optional.)
+    """
+    # get a pointer to the code (and hope page is executable)
+    ptr = pointer(ct.c_char_p(code))
+    # typecast said pointer as an argless func
+    fun = ct.cast(ptr, ct.POINTER(ct.WINFUNCTYPE(ct.c_uint))).contents
+    # since there's a call, the code must end with a retn
+    # (so the asm isn't embedded so much as called, meh)
+    return fun
