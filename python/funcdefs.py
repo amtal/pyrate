@@ -1,8 +1,7 @@
 from ctypes import * # this clutters the namespace of any module that imports *
                      # from funcdefs... but they probably want to import * from
                      # ctypes anyway, so not a big deal
-from asm import * # more namespace pollution
-                    # todo: solve this later
+import asm
 
 # find DLL base addresses
 def get_base_addrs():
@@ -107,7 +106,7 @@ def fastcall(addr, ret_t, *arg_ts):
         # TODO proper handling of arg_ts ctypes
         conv_args = ()
         for arg in args:
-                conv_args+=(DWORD(arg),)
+                conv_args+=(asm.DWORD(arg),)
         args = conv_args
         # insert particular arguments into preassembled machine code
         code = machine_code.format(*args)

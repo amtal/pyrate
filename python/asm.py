@@ -94,7 +94,7 @@ def call(code):
     (The retval comes from eax in stdcall, so is totally optional.)
     """
     # get a pointer to the code (and hope page is executable)
-    ptr = pointer(ct.c_char_p(code))
+    ptr = ct.pointer(ct.c_char_p(code))
     # typecast said pointer as an argless func
     fun = ct.cast(ptr, ct.POINTER(ct.WINFUNCTYPE(ct.c_uint))).contents
     # since there's a call, the code must end with a retn
