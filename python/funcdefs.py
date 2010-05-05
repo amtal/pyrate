@@ -1,7 +1,7 @@
 from ctypes import * # this clutters the namespace of any module that imports *
                      # from funcdefs... but they probably want to import * from
                      # ctypes anyway, so not a big deal
-from ezasm import * # more namespace pollution
+from asm import * # more namespace pollution
                     # todo: solve this later
 
 # find DLL base addresses
@@ -71,38 +71,52 @@ def fastcall(addr, ret_t, *arg_ts):
     The rest are pushed on stack right-to-left. Callee cleans up stack.
     Return in EAX. (EAX,ECX,EDX are thus available for use.)
     """
-    # asm wrapper to load reg+stack according to call conventions
+    # assemble an asm wrapper around the function
+    # this gets done just once, at module load time, by the decorator
+    #
+    # since parameters are unknown, the machine code is parametrized via
+    # string.format(*args), to be swapped in on function call
+    #
+    # alternatively, could wrap with an stdcall... but eh, this is more flexible
+    s = 'push ebx;'
+    junk = 0 # how many bytes to clean off the stack
+    # first two arguments in registers
+    if len(arg_ts)>0: s += 'mov ecx {0};'
+    if len(arg_ts)>1: s += 'mov edx {1};'
+    # variable arguments on the stack
+    vargs = len(arg_ts)-2
+    if vargs>0:
+        junk += 4*vargs # args are DWORDs
+        for n in range(2, 2+vargs):
+            s += 'mov eax {%d}; push eax;' % (n,)
+    # function call and cleanup
+    s +='''
+        mov ebx $func_addr
+        call ebx
+        pop ebx
+        retn $stack_junk
+        '''
+    asm_code = s
+    machine_code = assemble(asm_code,
+                            func_addr=DWORD(addr),
+                            stack_junk=WORD(junk))
+    
     def cfun(*args):
         # hammer the arguments into c_types if they aren't already
+        # ehh is this necessary anymore? TODO check
         conv_args = ()
         for arg,arg_t in zip(args,arg_ts):
             if not type(arg)==arg_t:
-                conv_args+=(arg_t(arg),)
+                conv_args+=(arg_t(arg).value,)
             else:
-                conv_args+=(arg,)
+                conv_args+=(arg.value,)
         args = conv_args
-        code = ''
-        stack_junk = 0
-        # EAX, ECX, EDX are available for use in an stdcall, but EBX isn't
-        # save EBX and restore it later
-        code += PUSH_EBX
-        # push arguments to stack, right to left, except 1st and 2nd
-        if len(args)>2:
-            stack_junk += 4*(len(args)-2) # make sure to pop stack later
-            for arg in reversed(args[2:]):
-                code += MOV_EAX_+DWORD(arg.value) + PUSH_EAX
-        # second arg to EDX
-        if len(args)>1: code += MOV_EDX_+DWORD(args[1].value)
-        # first arg to ECX
-        if len(arg_ts)>0: code += MOV_ECX_+DWORD(args[0].value)
-        # call C function we're wrapping with asm
-        code += (MOV_EBX_+DWORD(addr)+
-                 CALL_EBX)
-        # clean stack and restore registers
-        code += POP_EBX+RETN_+WORD(stack_junk)
-        # call constructed asm wrapper function
-        ret = c_uint(asm(code)())
-        # hammer the retval into a correct shape
+
+        # insert particular arguments into preassembled machine code
+        code = machine_code.format(*args)
+        # execute
+        ret = c_uint(asm_func(code)())
+        # hammer the retval into a correct shape via pointer typecast
         return cast(pointer(ret), POINTER(ret_t)).contents
     
     def wrap1(f):
