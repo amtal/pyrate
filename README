@@ -14,19 +14,23 @@ STRUCTURE:
     python/d2vars.py    "
     python/d2struct.py  "
     python/funcdefs.py  decorators and functions used to neatly define the above
+    python/asm.py       inline assembler required for more advanced techniques
     python/boot/        IDLE GUI and other startup code
     python/d2py.py      interpreter entry point
     c/Engine/           DLL with Python interpreter and nothing else
     c/Injector/         trivial DLL injector
 
+CURRENTLY IMPLEMENTED:
+    Variable pointers.
+    Standard (stdcall, cdecl, MS __fastcall) function calls.
+    Ability to inline simple assembly.
+
 ROUGH ROADMAP:
-    1. Test simple functions and var pointers.
-    2. Implement a library for their neat and compact definitions.
     3. Do what I can with structs. They seem to really need a pretty-printer.
-    4. Look into simple (stdcall/cdecl) intercepts.
+    4. Look into simple intercepts.
     5. Implement a classic, resourse-intensive program (Diablo 2 maphack) and compare to a C equivalent.
     6. Look into embedding simple assembly, in order to intercept and call non-stdcall, non-cdecl functions!
 
-Based on some of my old code: http://code.google.com/p/d2py/
+Originally based on some of my old code: http://code.google.com/p/d2py/
 
 PROOF OF CONCEPT IN PROGRESS - CODE QUALITY NOT GUARANTEED!
