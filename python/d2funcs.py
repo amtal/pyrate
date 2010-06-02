@@ -1,5 +1,5 @@
 from d2structs import *
-from funcdefs import *
+from lib.funcdefs import *
 
 # simple function that doesn't require any special work
 @stdcall(offset("d2client.dll", 0x41930), c_byte)

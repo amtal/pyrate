@@ -13,12 +13,12 @@ STRUCTURE:
     python/d2funcs.py   process internals available to an injected interpreter
     python/d2vars.py    "
     python/d2struct.py  "
-    python/funcdefs.py  decorators and functions used to neatly define the above
-    python/asm.py       inline assembler required for more advanced techniques
+    python/lib/funcdefs.py  decorators and functions used to neatly define the above
+    python/lib/asm.py   inline assembler required for more advanced techniques
     python/boot/        IDLE GUI and other startup code
     python/d2py.py      interpreter entry point
-    c/Engine/           DLL with Python interpreter and nothing else
-    c/Injector/         trivial DLL injector
+    c/Engine/*          DLL with Python interpreter and nothing else
+    c/Injector/*        trivial DLL injector
 
 CURRENTLY IMPLEMENTED:
     Variable pointers.

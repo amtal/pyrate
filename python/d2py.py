@@ -1,4 +1,4 @@
-''' Main entry point. This is the file run by d2py.dll on injection!
+""" Main entry point. This is the file run by d2py.dll on injection!
 
     Module is loaded in __main__ namespace the moment the DLL is injected and
 main thread is started. Control need not be returned, the thread is all ours.
@@ -11,7 +11,7 @@ bot initialization.
     CAUTION: THIS MODULE IS VERY SENSITIVE TO FAILURE. ANY FAILURE THAT OCCURS
     WILL PROBABLY BE SILENT SINCE NO STDOUT HAS BEEN INITIALIZED. IT WILL ALSO
     BE FATAL.
-'''
+"""
 
 if __name__=='__main__':
     #TODO: sort out paths somehow, someday

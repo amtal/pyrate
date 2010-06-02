@@ -1,4 +1,4 @@
 "Loaded immediately after Tk GUI is started. Has stdout/stdin!"
 
-print "hello world"
+print "boot/startup.py: hello world!"
 

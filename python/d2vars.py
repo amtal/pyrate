@@ -1,5 +1,5 @@
 from d2structs import *
-from funcdefs import *
+from lib.funcdefs import *
 
 # some variables (these can be read, but I haven't got writing to work yet)
 playerUnit = varptr(UnitAny, offset("d2client.dll", 0x11BBFC))
